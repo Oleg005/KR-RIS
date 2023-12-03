@@ -1,0 +1,34 @@
+- name: Install Git, Go, and Node.js and Clone GitHub repository
+  hosts: your_host
+  become: yes
+
+  tasks:
+    - name: Install Git
+      apt:
+        name: git
+        state: present  # For Debian/Ubuntu systems, adjust for other OS
+
+    - name: Install Go
+      become_user: root
+      shell: >
+        wget -c https://golang.org/dl/go1.17.6.linux-amd64.tar.gz &&
+        sudo tar -C /usr/local -xzf go1.17.6.linux-amd64.tar.gz
+      args:
+        executable: /bin/bash
+
+    - name: Install Node.js and npm
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - nodejs
+        - npm
+
+    - name: Remove existing project directory
+      command: rm -rf /path/to/your/project
+
+    - name: Clone the repository
+      git:
+        repo: https://github.com/your_username/your_repository.git
+        dest: /path/to/your/project
+        version: master  # Specify the branch or tag you want to fetch
